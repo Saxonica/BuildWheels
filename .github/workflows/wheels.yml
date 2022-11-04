@@ -1,0 +1,79 @@
+name: Build Wheels
+
+on: push
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11, ubuntu-20.04]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Read config.json
+        run: |
+          echo 'CONFIG<<EOF' >> $GITHUB_ENV
+          cat ./config.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: Summarize the config
+        run: |
+          echo Date: ${{ fromJson(env.CONFIG).date }}
+          echo User: ${{ fromJson(env.CONFIG).user }}
+          echo Mac: ${{ fromJson(env.CONFIG).mac }}
+          echo Linux: ${{ fromJson(env.CONFIG).linux }}
+          echo Windows: ${{ fromJson(env.CONFIG).windows }}
+
+      - uses: actions/setup-python@v3
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.11.1
+
+      - name: Get the Mac binaries
+        if: matrix.os == 'macos-11' && fromJson(env.CONFIG).mac == true
+        run: |
+          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ fromJson(env.CONFIG).user }}/mac.wheels.tar.gz
+          tar zxf libs.tar.gz
+          rm -f libs.tar.gz
+
+      - name: Copy the Mac binaries to a fixed location
+        if: matrix.os == 'macos-11' && fromJson(env.CONFIG).mac == true
+        run: |
+          sudo mkdir -p ${{ fromJson(env.CONFIG).macpath }}/build/c
+          sudo cp mac/*/libs/darwin/* ${{ fromJson(env.CONFIG).macpath }}/build/c
+
+      - name: Build the Mac wheels
+        if: matrix.os == 'macos-11' && fromJson(env.CONFIG).mac == true
+        run: |
+          cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../../
+          cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../../
+          cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../../
+
+      - name: Get the Linux binaries
+        if: matrix.os == 'ubuntu-20.04' && fromJson(env.CONFIG).linux == true
+        run: |
+          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ fromJson(env.CONFIG).user }}/linux.wheels.tar.gz
+          tar zxf libs.tar.gz
+          rm -f libs.tar.gz
+
+      - name: Build the Linux wheels
+        if: matrix.os == 'ubuntu-20.04' && fromJson(env.CONFIG).linux == true
+        run: |
+          cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
+          cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
+          cd linux/hec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-20.04' && fromJson(env.CONFIG).linux == true
+        with:
+          name: linux-wheels
+          path: ./linuxwheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'macos-11' && fromJson(env.CONFIG).mac == true
+        with:
+          name: mac-wheels
+          path: ./macwheelhouse/*.whl
