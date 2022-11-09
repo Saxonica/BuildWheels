@@ -96,7 +96,7 @@ jobs:
         run: |
           curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/windows.wheels.tar.gz
           tar zxf libs.tar.gz
-          rm -f libs.tar.gz
+          del libs.tar.gz
 
       - name: Build the Windows wheels
         if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
