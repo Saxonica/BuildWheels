@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11, ubuntu-20.04]
+        os: [macos-11, ubuntu-20.04, windows-2019]
 
     steps:
       - uses: actions/checkout@v3
@@ -66,6 +66,20 @@ jobs:
           cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
           cd linux/hec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
 
+      - name: Get the Windows binaries
+        if: matrix.os == 'windows-2019' && fromJson(env.CONFIG).windows == true
+        run: |
+          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ fromJson(env.CONFIG).user }}/windows.wheels.tar.gz
+          tar zxf libs.tar.gz
+          rm -f libs.tar.gz
+
+      - name: Build the Windows wheels
+        if: matrix.os == 'windows-2019' && fromJson(env.CONFIG).windows == true
+        run: |
+          cd windows/eec_pypi && python -m cibuildwheel --output-dir ../../windowswheelhouse --platform windows && cd ../../
+          cd windows/pec_pypi && python -m cibuildwheel --output-dir ../../windowswheelhouse --platform windows && cd ../../
+          cd windows/hec_pypi && python -m cibuildwheel --output-dir ../../windowswheelhouse --platform linux && cd ../../
+
       - uses: actions/upload-artifact@v3
         if: matrix.os == 'ubuntu-20.04' && fromJson(env.CONFIG).linux == true
         with:
@@ -77,3 +91,9 @@ jobs:
         with:
           name: mac-wheels
           path: ./macwheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'windows-2019' && fromJson(env.CONFIG).windows == true
+        with:
+          name: windows-wheels
+          path: ./windowswheelhouse/*.whl
