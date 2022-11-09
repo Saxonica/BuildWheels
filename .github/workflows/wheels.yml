@@ -101,15 +101,16 @@ jobs:
       - name: Build the Windows wheels
         if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         run: |
-          dir
           cd windows/eec_pypi
-          dir
+          copy libs/win/*.lib .
           python -m cibuildwheel --output-dir ../..windowswheelhouse --platform windows
           cd ../..
           cd windows/pec_pypi
+          copy libs/win/*.lib .
           python -m cibuildwheel --output-dir ../..windowswheelhouse --platform windows
           cd ../..
           cd windows/hec_pypi
+          copy libs/win/*.lib .
           python -m cibuildwheel --output-dir ../..windowswheelhouse --platform linux
           cd ../..
 
