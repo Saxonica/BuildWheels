@@ -6,9 +6,11 @@ jobs:
   load_config:
     runs-on: ubuntu-latest
     outputs:
-      branch: ${{ steps.check_step.outputs.branch }}
-      reponame: ${{ steps.check_step.outputs.reponame }}
-      tag: ${{ steps.check_step.outputs.tag }}
+      date: ${{ steps.load_config.outputs.date }}
+      linux: ${{ steps.load_config.outputs.linux }}
+      mac: ${{ steps.load_config.outputs.mac }}
+      user: ${{ steps.load_config.outputs.user }}
+      windows: ${{ steps.load_config.outputs.windows }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,17 +20,11 @@ jobs:
       - name: Load the configuration
         id: check_step
         run: |
-          raw=${{ github.repository }}
-          reponame=${raw##*/}
-          echo "reponame=$reponame" >> $GITHUB_OUTPUT
-          jq . config.json
-          echo test=`jq -r .user config.json`
           echo user=`jq -r .user config.json` >> $GITHUB_OUTPUT
           echo mac=`jq -r .mac config.json` >> $GITHUB_OUTPUT
           echo windows=`jq -r .windows config.json` >> $GITHUB_OUTPUT
           echo linux=`jq -r .linux config.json` >> $GITHUB_OUTPUT
           echo date=`jq -r .date config.json` >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -40,7 +36,6 @@ jobs:
       W_WINDOWS: ${{ needs.load_config.outputs.windows }}
       W_LINUX: ${{ needs.load_config.outputs.linux }}
       W_DATE: ${{ needs.load_config.outputs.date }}
-      W_REPO: ${{ needs.load_config.outputs.reponame }}
 
     strategy:
       matrix:
