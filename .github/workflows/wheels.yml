@@ -18,6 +18,8 @@ jobs:
       - name: Get branch name, etc.
         id: check_step
         run: |
+          jq . config.json
+          echo test=`jq .user config.json`
           echo user=`jq .user config.json` >> $GITHUB_OUTPUT
           echo mac=`jq .mac config.json` >> $GITHUB_OUTPUT
           echo windows=`jq .windows config.json` >> $GITHUB_OUTPUT
