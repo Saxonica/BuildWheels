@@ -58,67 +58,67 @@ jobs:
         run: python -m pip install cibuildwheel==2.11.1
 
       - name: Get the Mac binaries
-        if: matrix.os == 'macos-11' && env.W_MAC == true
+        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
         run: |
           curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/mac.wheels.tar.gz
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
 
       - name: Copy the Mac binaries to a fixed location
-        if: matrix.os == 'macos-11' && env.W_MAC == true
+        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
         run: |
           sudo mkdir -p ${{ env.W_MACpath }}/build/c
           sudo cp mac/*/libs/darwin/* ${{ env.W_MACpath }}/build/c
 
       - name: Build the Mac wheels
-        if: matrix.os == 'macos-11' && env.W_MAC == true
+        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
         run: |
           cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../../
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../../
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../../
 
       - name: Get the Linux binaries
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == true
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
         run: |
           curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/linux.wheels.tar.gz
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
 
       - name: Build the Linux wheels
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == true
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
         run: |
           cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
           cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
           cd linux/hec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../../
 
       - name: Get the Windows binaries
-        if: matrix.os == 'windows-2019' && env.W_WINDOWS == true
+        if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         run: |
           curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/windows.wheels.tar.gz
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
 
       - name: Build the Windows wheels
-        if: matrix.os == 'windows-2019' && env.W_WINDOWS == true
+        if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         run: |
           cd windows/eec_pypi && python -m cibuildwheel --output-dir ../../windowswheelhouse --platform windows && cd ../../
           cd windows/pec_pypi && python -m cibuildwheel --output-dir ../../windowswheelhouse --platform windows && cd ../../
           cd windows/hec_pypi && python -m cibuildwheel --output-dir ../../windowswheelhouse --platform linux && cd ../../
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == true
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
         with:
           name: linux-wheels
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && env.W_MAC == true
+        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
         with:
           name: mac-wheels
           path: ./macwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'windows-2019' && env.W_WINDOWS == true
+        if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         with:
           name: windows-wheels
           path: ./windowswheelhouse/*.whl
