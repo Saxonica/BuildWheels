@@ -6,11 +6,11 @@ jobs:
   load_config:
     runs-on: ubuntu-latest
     outputs:
-      date: ${{ steps.load_config.outputs.date }}
-      linux: ${{ steps.load_config.outputs.linux }}
-      mac: ${{ steps.load_config.outputs.mac }}
-      user: ${{ steps.load_config.outputs.user }}
-      windows: ${{ steps.load_config.outputs.windows }}
+      date: ${{ steps.load.outputs.date }}
+      linux: ${{ steps.load.outputs.linux }}
+      mac: ${{ steps.load.outputs.mac }}
+      user: ${{ steps.load.outputs.user }}
+      windows: ${{ steps.load.outputs.windows }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Load the configuration
-        id: check_step
+        id: load
         run: |
           echo user=`jq -r .user config.json` >> $GITHUB_OUTPUT
           echo mac=`jq -r .mac config.json` >> $GITHUB_OUTPUT
@@ -51,7 +51,6 @@ jobs:
           echo Mac: ${{ env.W_MAC }}
           echo Linux: ${{ env.W_LINUX }}
           echo Windows: ${{ env.W_WINDOWS }}
-          echo Repository: ${{ env.W_REPO }}
 
       - uses: actions/setup-python@v3
 
