@@ -22,12 +22,13 @@ jobs:
           reponame=${raw##*/}
           echo "reponame=$reponame" >> $GITHUB_OUTPUT
           jq . config.json
-          echo test=`jq .user config.json`
-          echo user=`jq .user config.json` >> $GITHUB_OUTPUT
-          echo mac=`jq .mac config.json` >> $GITHUB_OUTPUT
-          echo windows=`jq .windows config.json` >> $GITHUB_OUTPUT
-          echo linux=`jq .linux config.json` >> $GITHUB_OUTPUT
-          echo date=`jq .date config.json` >> $GITHUB_OUTPUT
+          echo test=`jq -r .user config.json`
+          echo user=`jq -r .user config.json` >> $GITHUB_OUTPUT
+          echo mac=`jq -r .mac config.json` >> $GITHUB_OUTPUT
+          echo windows=`jq -r .windows config.json` >> $GITHUB_OUTPUT
+          echo linux=`jq -r .linux config.json` >> $GITHUB_OUTPUT
+          echo date=`jq -r .date config.json` >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
