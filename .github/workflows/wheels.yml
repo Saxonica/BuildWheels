@@ -15,9 +15,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get branch name, etc.
+      - name: Load the configuration
         id: check_step
         run: |
+          raw=${{ github.repository }}
+          reponame=${raw##*/}
+          echo "reponame=$reponame" >> $GITHUB_OUTPUT
           jq . config.json
           echo test=`jq .user config.json`
           echo user=`jq .user config.json` >> $GITHUB_OUTPUT
@@ -36,6 +39,8 @@ jobs:
       W_WINDOWS: ${{ needs.load_config.outputs.windows }}
       W_LINUX: ${{ needs.load_config.outputs.linux }}
       W_DATE: ${{ needs.load_config.outputs.date }}
+      W_REPO: ${{ needs.load_config.outputs.reponame }}
+
     strategy:
       matrix:
         os: [macos-11, ubuntu-20.04, windows-2019]
@@ -50,6 +55,7 @@ jobs:
           echo Mac: ${{ env.W_MAC }}
           echo Linux: ${{ env.W_LINUX }}
           echo Windows: ${{ env.W_WINDOWS }}
+          echo Repository: ${{ env.W_REPO }}
 
       - uses: actions/setup-python@v3
 
