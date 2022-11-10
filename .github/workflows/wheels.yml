@@ -111,7 +111,7 @@ jobs:
           cd ../..
           cd windows/hec_pypi
           copy libs/win/*.lib .
-          python -m cibuildwheel --output-dir ../../windowswheelhouse --platform linux
+          python -m cibuildwheel --output-dir ../../windowswheelhouse --platform windows
           cd ../..
 
       - uses: actions/upload-artifact@v3
