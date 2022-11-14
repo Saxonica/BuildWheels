@@ -1,6 +1,7 @@
 {
   "user": "norm",
   "mac": true,
+  "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
   "linux": true,
   "windows": true,
   "date": "2022-11-14T12-35-00"

@@ -9,6 +9,7 @@ jobs:
       date: ${{ steps.load.outputs.date }}
       linux: ${{ steps.load.outputs.linux }}
       mac: ${{ steps.load.outputs.mac }}
+      macpath: ${{ steps.load.outputs.macpath }}
       user: ${{ steps.load.outputs.user }}
       windows: ${{ steps.load.outputs.windows }}
     steps:
@@ -25,6 +26,7 @@ jobs:
           echo windows=`jq -r .windows config.json` >> $GITHUB_OUTPUT
           echo linux=`jq -r .linux config.json` >> $GITHUB_OUTPUT
           echo date=`jq -r .date config.json` >> $GITHUB_OUTPUT
+          echo macpath=`jq -r .macpath config.json` >> $GITHUB_OUTPUT
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -36,6 +38,7 @@ jobs:
       W_WINDOWS: ${{ needs.load_config.outputs.windows }}
       W_LINUX: ${{ needs.load_config.outputs.linux }}
       W_DATE: ${{ needs.load_config.outputs.date }}
+      MACPATH: ${{ needs.load_config.outputs.macpath }}
       CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path libs/win -w {dest_dir} {wheel}"
 
@@ -69,8 +72,8 @@ jobs:
       - name: Copy the Mac binaries to a fixed location
         if: matrix.os == 'macos-11' && env.W_MAC == 'true'
         run: |
-          sudo mkdir -p ${{ env.W_MACpath }}/build/c
-          sudo cp mac/*/libs/darwin/* ${{ env.W_MACpath }}/build/c
+          sudo mkdir -p ${{ env.MACPATH }}/build/c
+          sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
 
       - name: Build the Mac wheels
         if: matrix.os == 'macos-11' && env.W_MAC == 'true'
