@@ -1,7 +1,7 @@
 {
   "user": "norm",
-  "mac": false,
-  "linux": false,
+  "mac": true,
+  "linux": true,
   "windows": true,
-  "date": "2022-11-10T14-30-41"
+  "date": "2022-11-14T12-35-00"
 }
