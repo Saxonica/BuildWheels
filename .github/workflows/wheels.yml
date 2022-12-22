@@ -41,8 +41,8 @@ jobs:
       MACPATH: ${{ needs.load_config.outputs.macpath }}
       CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path libs/win -w {dest_dir} {wheel}"
-      CIBW_TEST_REQUIRES: pytest
-      CIBW_TEST_COMMAND: "pytest test_saxonc.py"
+      #CIBW_TEST_REQUIRES: pytest
+      #CIBW_TEST_COMMAND: "pytest test_saxonc.py"
 
     strategy:
       matrix:
