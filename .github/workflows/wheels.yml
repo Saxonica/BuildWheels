@@ -80,10 +80,7 @@ jobs:
       - name: Build the Mac wheels
         if: matrix.os == 'macos-11' && env.W_MAC == 'true'
         env:
-          SAVE_CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_ARCHS_MACOS: universal2
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
-            delocate-wheel --require-archs universal2 -w {dest_dir} -v {wheel}
+          CIBW_ARCHS_MACOS: x86_64 arm64
         run: |
           cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
