@@ -79,6 +79,8 @@ jobs:
 
       - name: Build the Mac wheels
         if: matrix.os == 'macos-11' && env.W_MAC == 'true'
+        env:
+          CIBW_ARCHS_MACOS: x86_64 arm64
         run: |
           cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
