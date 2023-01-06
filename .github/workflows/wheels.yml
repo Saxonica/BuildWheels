@@ -8,7 +8,8 @@ jobs:
     outputs:
       date: ${{ steps.load.outputs.date }}
       linux: ${{ steps.load.outputs.linux }}
-      mac: ${{ steps.load.outputs.mac }}
+      macamd: ${{ steps.load.outputs.macamd }}
+      macintel: ${{ steps.load.outputs.macintel }}
       macpath: ${{ steps.load.outputs.macpath }}
       user: ${{ steps.load.outputs.user }}
       windows: ${{ steps.load.outputs.windows }}
@@ -22,7 +23,8 @@ jobs:
         id: load
         run: |
           echo user=`jq -r .user config.json` >> $GITHUB_OUTPUT
-          echo mac=`jq -r .mac config.json` >> $GITHUB_OUTPUT
+          echo macamd=`jq -r .macamd config.json` >> $GITHUB_OUTPUT
+          echo macintel=`jq -r .macintel config.json` >> $GITHUB_OUTPUT
           echo windows=`jq -r .windows config.json` >> $GITHUB_OUTPUT
           echo linux=`jq -r .linux config.json` >> $GITHUB_OUTPUT
           echo date=`jq -r .date config.json` >> $GITHUB_OUTPUT
@@ -34,7 +36,8 @@ jobs:
     needs: load_config
     env:
       W_USER: ${{ needs.load_config.outputs.user }}
-      W_MAC: ${{ needs.load_config.outputs.mac }}
+      W_MACAMD: ${{ needs.load_config.outputs.macamd }}
+      W_MACINTEL: ${{ needs.load_config.outputs.macintel }}
       W_WINDOWS: ${{ needs.load_config.outputs.windows }}
       W_LINUX: ${{ needs.load_config.outputs.linux }}
       W_DATE: ${{ needs.load_config.outputs.date }}
@@ -55,7 +58,8 @@ jobs:
         run: |
           echo Date: ${{ env.W_DATE }}
           echo User: ${{ env.W_USER }}
-          echo Mac: ${{ env.W_MAC }}
+          echo "Mac (Intel):" ${{ env.W_MACAMD }}
+          echo "Mac (AMD):" ${{ env.W_MACINTEL }}
           echo Linux: ${{ env.W_LINUX }}
           echo Windows: ${{ env.W_WINDOWS }}
 
@@ -64,23 +68,49 @@ jobs:
       - name: Install cibuildwheel
         run: python -m pip install cibuildwheel==2.11.1
 
-      - name: Get the Mac binaries
-        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
+      - name: Get the Mac AMD binaries
+        if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
         run: |
-          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/mac.wheels.tar.gz
+          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/mac-amd.wheels.tar.gz
+          sudo rm -rf mac
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
 
-      - name: Copy the Mac binaries to a fixed location
-        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
+      - name: Copy the Mac AMD binaries to a fixed location
+        if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
         run: |
+          sudo rm -rf ${{ env.MACPATH }}/build/c
           sudo mkdir -p ${{ env.MACPATH }}/build/c
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
 
-      - name: Build the Mac wheels
-        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
+      - name: Build the Mac AMD wheels
+        if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
         env:
-          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_ARCHS_MACOS: arm64
+        run: |
+          cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
+          cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
+          cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
+
+      - name: Get the Mac Intel binaries
+        if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
+        run: |
+          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/mac-intel.wheels.tar.gz
+          sudo rm -rf mac
+          tar zxf libs.tar.gz
+          rm -f libs.tar.gz
+
+      - name: Copy the Mac Intel binaries to a fixed location
+        if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
+        run: |
+          sudo rm -rf ${{ env.MACPATH }}/build/c
+          sudo mkdir -p ${{ env.MACPATH }}/build/c
+          sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
+
+      - name: Build the Mac Intel wheels
+        if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
+        env:
+          CIBW_ARCHS_MACOS: x86_64
         run: |
           cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
@@ -130,7 +160,7 @@ jobs:
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && env.W_MAC == 'true'
+        if: matrix.os == 'macos-11' && (env.W_MACAMD == 'true' || env.W_MACINTEL == 'true')
         with:
           name: mac-wheels
           path: ./macwheelhouse/*.whl
