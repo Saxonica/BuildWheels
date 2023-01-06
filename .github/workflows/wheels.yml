@@ -1,7 +1,5 @@
 name: Build Wheels
-
 on: push
-
 jobs:
   load_config:
     runs-on: ubuntu-latest
@@ -44,8 +42,6 @@ jobs:
       MACPATH: ${{ needs.load_config.outputs.macpath }}
       CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path libs/win -w {dest_dir} {wheel}"
-      #CIBW_TEST_REQUIRES: pytest
-      #CIBW_TEST_COMMAND: "pytest test_saxonc.py"
 
     strategy:
       matrix:
@@ -71,7 +67,7 @@ jobs:
       - name: Get the Mac AMD binaries
         if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
         run: |
-          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/mac-amd.wheels.tar.gz
+          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-amd.wheels.tar.gz
           sudo rm -rf mac
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
@@ -95,7 +91,7 @@ jobs:
       - name: Get the Mac Intel binaries
         if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
         run: |
-          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/mac-intel.wheels.tar.gz
+          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-intel.wheels.tar.gz
           sudo rm -rf mac
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
@@ -119,7 +115,7 @@ jobs:
       - name: Get the Linux binaries
         if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
         run: |
-          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/linux.wheels.tar.gz
+          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/linux.wheels.tar.gz
           tar zxf libs.tar.gz
           rm -f libs.tar.gz
 
@@ -133,7 +129,7 @@ jobs:
       - name: Get the Windows binaries
         if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         run: |
-          curl -o libs.tar.gz https://dev.saxonica.com/wheel-binaries/${{ env.W_USER }}/windows.wheels.tar.gz
+          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/windows.wheels.tar.gz
           tar zxf libs.tar.gz
           del libs.tar.gz
 
