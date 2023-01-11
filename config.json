@@ -3,7 +3,7 @@
   "macamd": false,
   "macintel": false,
   "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
-  "linux": false,
-  "windows": true,
+  "linux": true,
+  "windows": false,
   "date": "2023-01-11T18-53-00"
 }
