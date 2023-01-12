@@ -1,9 +1,9 @@
 {
   "user": "norm",
-  "macamd": true,
-  "macintel": true,
+  "macamd": false,
+  "macintel": false,
   "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
-  "linux": false,
+  "linux": true,
   "windows": false,
   "date": "2023-01-12T19-04-00"
 }
