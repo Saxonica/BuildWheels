@@ -1,9 +1,9 @@
 {
   "user": "norm",
-  "macx86_64": false,
+  "macx86_64": true,
   "macaarch64": false,
-  "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
   "linux": false,
   "windows": false,
-  "date": "2023-01-16T16-58-00"
+  "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
+  "date": "2023-01-16T16-59-27"
 }
