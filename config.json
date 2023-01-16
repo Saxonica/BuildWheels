@@ -1,7 +1,7 @@
 {
   "user": "norm",
-  "macamd": false,
-  "macintel": false,
+  "macx86_64": false,
+  "macaarch64": false,
   "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
   "linux": false,
   "windows": false,

@@ -6,8 +6,8 @@ jobs:
     outputs:
       date: ${{ steps.load.outputs.date }}
       linux: ${{ steps.load.outputs.linux }}
-      macamd: ${{ steps.load.outputs.macamd }}
-      macintel: ${{ steps.load.outputs.macintel }}
+      macaarch64: ${{ steps.load.outputs.macaarch64 }}
+      macx86_64: ${{ steps.load.outputs.macx86_64 }}
       macpath: ${{ steps.load.outputs.macpath }}
       user: ${{ steps.load.outputs.user }}
       windows: ${{ steps.load.outputs.windows }}
@@ -21,8 +21,8 @@ jobs:
         id: load
         run: |
           echo user=`jq -r .user config.json` >> $GITHUB_OUTPUT
-          echo macamd=`jq -r .macamd config.json` >> $GITHUB_OUTPUT
-          echo macintel=`jq -r .macintel config.json` >> $GITHUB_OUTPUT
+          echo macaarch64=`jq -r .macaarch64 config.json` >> $GITHUB_OUTPUT
+          echo macx86_64=`jq -r .macx86_64 config.json` >> $GITHUB_OUTPUT
           echo windows=`jq -r .windows config.json` >> $GITHUB_OUTPUT
           echo linux=`jq -r .linux config.json` >> $GITHUB_OUTPUT
           echo date=`jq -r .date config.json` >> $GITHUB_OUTPUT
@@ -34,8 +34,8 @@ jobs:
     needs: load_config
     env:
       W_USER: ${{ needs.load_config.outputs.user }}
-      W_MACAMD: ${{ needs.load_config.outputs.macamd }}
-      W_MACINTEL: ${{ needs.load_config.outputs.macintel }}
+      W_MACAARCH64: ${{ needs.load_config.outputs.macaarch64 }}
+      W_MACX86_64: ${{ needs.load_config.outputs.macx86_64 }}
       W_WINDOWS: ${{ needs.load_config.outputs.windows }}
       W_LINUX: ${{ needs.load_config.outputs.linux }}
       W_DATE: ${{ needs.load_config.outputs.date }}
@@ -54,8 +54,8 @@ jobs:
         run: |
           echo Date: ${{ env.W_DATE }}
           echo User: ${{ env.W_USER }}
-          echo "Mac (Intel):" ${{ env.W_MACAMD }}
-          echo "Mac (AMD):" ${{ env.W_MACINTEL }}
+          echo "Mac (Intel):" ${{ env.W_MACAARCH64 }}
+          echo "Mac (AMD):" ${{ env.W_MACX86_64 }}
           echo Linux: ${{ env.W_LINUX }}
           echo Windows: ${{ env.W_WINDOWS }}
 
@@ -65,7 +65,7 @@ jobs:
         run: python -m pip install cibuildwheel==2.11.1
 
       - name: Get the Mac AMD binaries
-        if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
+        if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         run: |
           curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-aarch64.wheels.tar.gz
           sudo rm -rf mac
@@ -73,14 +73,14 @@ jobs:
           rm -f libs.tar.gz
 
       - name: Copy the Mac AMD binaries to a fixed location
-        if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
+        if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         run: |
           sudo rm -rf ${{ env.MACPATH }}/build/c
           sudo mkdir -p ${{ env.MACPATH }}/build/c
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
 
       - name: Build the Mac AMD wheels
-        if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
+        if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         env:
           CIBW_ARCHS_MACOS: arm64
         run: |
@@ -89,7 +89,7 @@ jobs:
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
 
       - name: Get the Mac Intel binaries
-        if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
+        if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         run: |
           curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-x86_64.wheels.tar.gz
           sudo rm -rf mac
@@ -97,14 +97,14 @@ jobs:
           rm -f libs.tar.gz
 
       - name: Copy the Mac Intel binaries to a fixed location
-        if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
+        if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         run: |
           sudo rm -rf ${{ env.MACPATH }}/build/c
           sudo mkdir -p ${{ env.MACPATH }}/build/c
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
 
       - name: Build the Mac Intel wheels
-        if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
+        if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         env:
           CIBW_ARCHS_MACOS: x86_64
         run: |
@@ -156,7 +156,7 @@ jobs:
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && (env.W_MACAMD == 'true' || env.W_MACINTEL == 'true')
+        if: matrix.os == 'macos-11' && (env.W_MACAARCH64 == 'true' || env.W_MACX86_64 == 'true')
         with:
           name: mac-wheels
           path: ./macwheelhouse/*.whl
