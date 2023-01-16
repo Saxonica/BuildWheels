@@ -67,7 +67,7 @@ jobs:
       - name: Get the Mac AMD binaries
         if: matrix.os == 'macos-11' && env.W_MACAMD == 'true'
         run: |
-          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-amd.wheels.tar.gz
+          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-aarch64.wheels.tar.gz
           sudo rm -rf mac
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
@@ -91,7 +91,7 @@ jobs:
       - name: Get the Mac Intel binaries
         if: matrix.os == 'macos-11' && env.W_MACINTEL == 'true'
         run: |
-          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-intel.wheels.tar.gz
+          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-x86_64.wheels.tar.gz
           sudo rm -rf mac
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
