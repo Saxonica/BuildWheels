@@ -3,7 +3,7 @@
   "macx86_64": false,
   "macaarch64": false,
   "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
-  "linux": false,
-  "windows": true,
-  "date": "2023-03-17T16-05-00"
+  "linux": true,
+  "windows": false,
+  "date": "2023-03-17T16-20-00"
 }
