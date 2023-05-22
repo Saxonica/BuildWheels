@@ -1,9 +1,9 @@
 {
-  "user": "norm",
-  "macx86_64": false,
-  "macaarch64": true,
-  "linux": false,
+  "user": "ond1",
+  "macx86_64": true,
+  "macaarch64": false,
+  "linux": true,
   "windows": false,
-  "macpath": "/Volumes/Saxonica/src/saxonica/saxondev",
-  "date": "2023-05-17T11-46-14"
+  "macpath": "/Users/ond1/work/development/git/saxon-dev/saxondev",
+  "date": "2023-05-22T14-46-14"
 }
