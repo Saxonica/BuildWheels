@@ -42,6 +42,9 @@ jobs:
       MACPATH: ${{ needs.load_config.outputs.macpath }}
       CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel==1.2.0"
       CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path libs/win -w {dest_dir} {wheel}"
+    permissions:
+      id-token: write
+      contents: read
 
     strategy:
       matrix:
@@ -49,6 +52,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials for reading the bucket
+        uses: aws-actions/configure-aws-credentials@v2.2.0
+        with:
+          role-to-assume: arn:aws:iam::299107274666:role/staging-wheels-GithubActionReadRoleDF6D587B-yrJ3M0M0VbMY
+          aws-region: eu-west-2
+
+      - name: Read contents of S3 bucket
+        run: |
+          aws s3 ls --recursive s3://saxonica-wheel-staging
 
       - name: Summarize the config
         run: |
@@ -62,12 +75,12 @@ jobs:
       - uses: actions/setup-python@v3
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.11.1
+        run: python -m pip install cibuildwheel==2.16.2
 
       - name: Get the Mac AMD binaries
         if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         run: |
-          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-aarch64.wheels.tar.gz
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/mac-aarch64.wheels.tar.gz libs.tar.gz
           sudo rm -rf mac
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
@@ -91,7 +104,7 @@ jobs:
       - name: Get the Mac Intel binaries
         if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         run: |
-          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/mac-x86_64.wheels.tar.gz
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/mac-x86_64.wheels.tar.gz libs.tar.gz
           sudo rm -rf mac
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
@@ -115,7 +128,7 @@ jobs:
       - name: Get the Linux binaries
         if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
         run: |
-          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/linux.wheels.tar.gz
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
@@ -129,7 +142,7 @@ jobs:
       - name: Get the Windows binaries
         if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         run: |
-          curl -o libs.tar.gz ${{ secrets.WHEEL_SOURCES }}/${{ env.W_USER }}/windows.wheels.tar.gz
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/windows.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           del libs.tar.gz
 
