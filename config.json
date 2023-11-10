@@ -2,7 +2,7 @@
   "user": "norm",
   "macx86_64": false,
   "macaarch64": false,
-  "linux": false,
-  "windows": true,
-  "date": "2023-11-10T17-21-26"
+  "linux": true,
+  "windows": false,
+  "date": "2023-11-10T17-42-48"
 }
