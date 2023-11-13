@@ -68,7 +68,7 @@ jobs:
       - uses: uraimo/run-on-arch-action@v2
         with:
           arch: ${{ matrix.arch }}
-          os: ${{ matrix.os }}
+          distro: ${{ matrix.os }}
 
       - name: Configure AWS credentials for reading the bucket
         uses: aws-actions/configure-aws-credentials@v2.2.0
