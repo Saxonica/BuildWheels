@@ -5,7 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       date: ${{ steps.load.outputs.date }}
-      linux: ${{ steps.load.outputs.linux }}
+      linuxaarch64: ${{ steps.load.outputs.linuxaarch64 }}
+      linuxx86_64: ${{ steps.load.outputs.linuxx86_64 }}
       macaarch64: ${{ steps.load.outputs.macaarch64 }}
       macx86_64: ${{ steps.load.outputs.macx86_64 }}
       macpath: ${{ steps.load.outputs.macpath }}
@@ -24,7 +25,8 @@ jobs:
           echo macaarch64=`jq -r .macaarch64 config.json` >> $GITHUB_OUTPUT
           echo macx86_64=`jq -r .macx86_64 config.json` >> $GITHUB_OUTPUT
           echo windows=`jq -r .windows config.json` >> $GITHUB_OUTPUT
-          echo linux=`jq -r .linux config.json` >> $GITHUB_OUTPUT
+          echo linuxaarch64=`jq -r .linuxaarch64 config.json` >> $GITHUB_OUTPUT
+          echo linuxx86_64=`jq -r .linuxx86_64 config.json` >> $GITHUB_OUTPUT
           echo date=`jq -r .date config.json` >> $GITHUB_OUTPUT
           echo macpath=`jq -r .macpath config.json` >> $GITHUB_OUTPUT
 
@@ -37,7 +39,8 @@ jobs:
       W_MACAARCH64: ${{ needs.load_config.outputs.macaarch64 }}
       W_MACX86_64: ${{ needs.load_config.outputs.macx86_64 }}
       W_WINDOWS: ${{ needs.load_config.outputs.windows }}
-      W_LINUX: ${{ needs.load_config.outputs.linux }}
+      W_LINUXAARCH64: ${{ needs.load_config.outputs.linuxaarch64 }}
+      W_LINUXX86_64: ${{ needs.load_config.outputs.linuxx86_64 }}
       W_DATE: ${{ needs.load_config.outputs.date }}
       MACPATH: ${{ needs.load_config.outputs.macpath }}
       CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel==1.2.0"
@@ -69,7 +72,8 @@ jobs:
           echo User: ${{ env.W_USER }}
           echo "Mac (Intel):" ${{ env.W_MACAARCH64 }}
           echo "Mac (AMD):" ${{ env.W_MACX86_64 }}
-          echo Linux: ${{ env.W_LINUX }}
+          echo Linux (Intel): ${{ env.W_LINUXX86_64 }}
+          echo Linux (AMD): ${{ env.W_LINUXAARCH64 }}
           echo Windows: ${{ env.W_WINDOWS }}
 
       - uses: actions/setup-python@v3
@@ -126,14 +130,14 @@ jobs:
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
 
       - name: Get the Linux binaries
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-x86_64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
       - name: Build the Linux wheels
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'
         run: |
           cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
           cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
@@ -163,7 +167,7 @@ jobs:
           cd ../..
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'
         with:
           name: linux-wheels
           path: ./linuxwheelhouse/*.whl
