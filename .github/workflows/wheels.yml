@@ -142,7 +142,7 @@ jobs:
       - name: Get the Windows binaries
         if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
         run: |
-          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/windows.wheels.tar.gz libs.tar.gz
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/windows-x86_64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           del libs.tar.gz
 
