@@ -70,10 +70,10 @@ jobs:
         run: |
           echo "Date:" ${{ env.W_DATE }}
           echo "User:" ${{ env.W_USER }}
-          echo "Mac (Intel):" ${{ env.W_MACAARCH64 }}
-          echo "Mac (AMD):" ${{ env.W_MACX86_64 }}
-          echo "Linux (Intel):" ${{ env.W_LINUXX86_64 }}
-          echo "Linux (AMD):" ${{ env.W_LINUXAARCH64 }}
+          echo "Mac (aarch64):" ${{ env.W_MACAARCH64 }}
+          echo "Mac (x86):" ${{ env.W_MACX86_64 }}
+          echo "Linux (aarch64):" ${{ env.W_LINUXX86_64 }}
+          echo "Linux (x86):" ${{ env.W_LINUXAARCH64 }}
           echo "Windows:" ${{ env.W_WINDOWS }}
 
       - uses: actions/setup-python@v3
@@ -81,7 +81,7 @@ jobs:
       - name: Install cibuildwheel
         run: python -m pip install cibuildwheel==2.16.2
 
-      - name: Get the Mac AMD binaries
+      - name: Get the Mac aarch64 binaries
         if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/mac-aarch64.wheels.tar.gz libs.tar.gz
@@ -89,14 +89,14 @@ jobs:
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
-      - name: Copy the Mac AMD binaries to a fixed location
+      - name: Copy the Mac arch64 binaries to a fixed location
         if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         run: |
           sudo rm -rf ${{ env.MACPATH }}/build/c
           sudo mkdir -p ${{ env.MACPATH }}/build/c
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
 
-      - name: Build the Mac AMD wheels
+      - name: Build the Mac arch64 wheels
         if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         env:
           CIBW_ARCHS_MACOS: arm64
@@ -105,7 +105,7 @@ jobs:
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
 
-      - name: Get the Mac Intel binaries
+      - name: Get the Mac x86 binaries
         if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/mac-x86_64.wheels.tar.gz libs.tar.gz
@@ -113,14 +113,14 @@ jobs:
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
-      - name: Copy the Mac Intel binaries to a fixed location
+      - name: Copy the Mac x86 binaries to a fixed location
         if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         run: |
           sudo rm -rf ${{ env.MACPATH }}/build/c
           sudo mkdir -p ${{ env.MACPATH }}/build/c
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
 
-      - name: Build the Mac Intel wheels
+      - name: Build the Mac x86 wheels
         if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
         env:
           CIBW_ARCHS_MACOS: x86_64
@@ -129,15 +129,33 @@ jobs:
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
 
-      - name: Get the Linux binaries
+      - name: Get the Linux x86 binaries
         if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-x86_64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
-      - name: Build the Linux wheels
+      - name: Build the Linux x86 wheels
         if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'
+        env:
+          CIBW_ARCHS_LINUX: x86_64
+        run: |
+          cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
+          cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
+          cd linux/hec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
+
+      - name: Get the Linux aarch64 binaries
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true'
+        run: |
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-aarch64.wheels.tar.gz libs.tar.gz
+          tar zxvf libs.tar.gz
+          rm -f libs.tar.gz
+
+      - name: Build the Linux aarch64 wheels
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true'
+        env:
+          CIBW_ARCHS_LINUX: aarch64
         run: |
           cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
           cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
@@ -167,7 +185,7 @@ jobs:
           cd ../..
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'
+        if: matrix.os == 'ubuntu-20.04' && (env.W_LINUXX86_64 == 'true' || env.W_LINUXAARCH64 == 'true')
         with:
           name: linux-wheels
           path: ./linuxwheelhouse/*.whl
