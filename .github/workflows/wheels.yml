@@ -32,7 +32,7 @@ jobs:
 
   build_wheels:
     name: Build ${{ matrix.os }} ${{ matrix.arch }}
-    runs-on: [${{ matrix.os }}, ${{ matrix.arch }}
+    runs-on: [ ${{ matrix.os }}, ${{ matrix.arch }} ]
     needs: load_config
     env:
       W_USER: ${{ needs.load_config.outputs.user }}
