@@ -136,28 +136,28 @@ jobs:
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
 
       - name: Get the Linux x86 binaries
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true'  && ${{ matrix.arch }} == 'x86_64'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true' && matrix.arch == 'x86_64'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-x86_64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
       - name: Build the Linux x86 wheels
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true' && ${{ matrix.arch }} == 'x86_64'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXX86_64 == 'true' && matrix.arch == 'x86_64'
         run: |
           cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
           cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
           cd linux/hec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
 
       - name: Get the Linux aarch64 binaries
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && ${{ matrix.arch }} == 'aarch64'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && matrix.arch == 'aarch64'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-aarch64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
       - name: Build the Linux aarch64 wheels
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && ${{ matrix.arch }} == 'aarch64'
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && matrix.arch == 'aarch64'
         env:
           CIBW_ARCHS_LINUX: aarch64
         run: |
