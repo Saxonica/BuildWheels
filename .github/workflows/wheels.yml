@@ -128,7 +128,7 @@ jobs:
       - name: Get the Linux binaries
         if: matrix.os == 'ubuntu-20.04' && env.W_LINUX == 'true'
         run: |
-          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux.wheels.tar.gz libs.tar.gz
+          aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-x86_64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
 
