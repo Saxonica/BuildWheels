@@ -78,9 +78,10 @@ jobs:
           echo "User:" ${{ env.W_USER }}
           echo "Mac (aarch64):" ${{ env.W_MACAARCH64 }}
           echo "Mac (x86):" ${{ env.W_MACX86_64 }}
-          echo "Linux (aarch64):" ${{ env.W_LINUXX86_64 }}
-          echo "Linux (x86):" ${{ env.W_LINUXAARCH64 }}
+          echo "Linux (aarch64):" ${{ env.W_LINUXAARCH64 }}
+          echo "Linux (x86):" ${{ env.W_LINUXX86_64 }}
           echo "Windows:" ${{ env.W_WINDOWS }}
+          uname -p
 
       - uses: actions/setup-python@v3
 
@@ -189,15 +190,27 @@ jobs:
           cd ../..
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-20.04' && (env.W_LINUXX86_64 == 'true' || env.W_LINUXAARCH64 == 'true')
+        if: matrix.os == 'ubuntu-20.04' && matrix.arch = 'aarch64' && env.W_LINUXAARCH64 == 'true'
         with:
-          name: linux-wheels
+          name: linux-wheels-aarch64
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && (env.W_MACAARCH64 == 'true' || env.W_MACX86_64 == 'true')
+        if: matrix.os == 'ubuntu-20.04' && matrix.arch = 'x86_64' && env.W_LINUXX86_64 == 'true'
         with:
-          name: mac-wheels
+          name: linux-wheels-x86_64
+          path: ./linuxwheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'macos-11' && matrix.arch = 'arm64' && env.W_MACAARCH64 == 'true'
+        with:
+          name: mac-wheels-aarch64
+          path: ./macwheelhouse/*.whl
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'macos-11' && matrix.arch = 'x86_64' && env.W_MACX86_64 == 'true'
+        with:
+          name: mac-wheels-x86_64
           path: ./macwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
