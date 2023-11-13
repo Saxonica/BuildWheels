@@ -31,7 +31,7 @@ jobs:
           echo macpath=`jq -r .macpath config.json` >> $GITHUB_OUTPUT
 
   build_wheels:
-    name: Build ${{ matrix.os }} ${{ matrix.arch }}
+    name: "Build ${{ matrix.os }} ${{ matrix.arch }}"
     runs-on: [ ${{ matrix.os }}, ${{ matrix.arch }} ]
     needs: load_config
     env:
