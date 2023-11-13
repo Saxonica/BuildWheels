@@ -31,8 +31,8 @@ jobs:
           echo macpath=`jq -r .macpath config.json` >> $GITHUB_OUTPUT
 
   build_wheels:
-    name: "Build ${{ matrix.os }} ${{ matrix.arch }}"
-    runs-on: [ ${{ matrix.os }}, ${{ matrix.arch }} ]
+    name: Build ${{ matrix.os }} ${{ matrix.arch }}
+    runs-on: [ 'ubuntu-latest', 'aarch64' ]
     needs: load_config
     env:
       W_USER: ${{ needs.load_config.outputs.user }}
