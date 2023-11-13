@@ -190,25 +190,25 @@ jobs:
           cd ../..
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-20.04' && matrix.arch = 'aarch64' && env.W_LINUXAARCH64 == 'true'
+        if: matrix.os == 'ubuntu-20.04' && matrix.arch == 'aarch64' && env.W_LINUXAARCH64 == 'true'
         with:
           name: linux-wheels-aarch64
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-20.04' && matrix.arch = 'x86_64' && env.W_LINUXX86_64 == 'true'
+        if: matrix.os == 'ubuntu-20.04' && matrix.arch == 'x86_64' && env.W_LINUXX86_64 == 'true'
         with:
           name: linux-wheels-x86_64
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && matrix.arch = 'arm64' && env.W_MACAARCH64 == 'true'
+        if: matrix.os == 'macos-11' && matrix.arch == 'arm64' && env.W_MACAARCH64 == 'true'
         with:
           name: mac-wheels-aarch64
           path: ./macwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && matrix.arch = 'x86_64' && env.W_MACX86_64 == 'true'
+        if: matrix.os == 'macos-11' && matrix.arch == 'x86_64' && env.W_MACX86_64 == 'true'
         with:
           name: mac-wheels-x86_64
           path: ./macwheelhouse/*.whl
