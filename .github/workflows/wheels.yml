@@ -73,9 +73,6 @@ jobs:
           aws-region: eu-west-2
 
       - name: Summarize the config
-        with:
-          arch: ${{ matrix.arch }}
-          os: ${{ matrix.os }}
         run: |
           echo "Date:" ${{ env.W_DATE }}
           echo "User:" ${{ env.W_USER }}
@@ -85,6 +82,9 @@ jobs:
           echo "Linux (x86):" ${{ env.W_LINUXX86_64 }}
           echo "Windows:" ${{ env.W_WINDOWS }}
           uname -p
+        with:
+          arch: ${{ matrix.arch }}
+          os: ${{ matrix.os }}
 
       - uses: actions/setup-python@v3
 
@@ -155,25 +155,25 @@ jobs:
 
       - name: Get the Linux aarch64 binaries
         if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && matrix.arch == 'aarch64'
-        with:
-          arch: ${{ matrix.arch }}
-          os: ${{ matrix.os }}
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/linux-aarch64.wheels.tar.gz libs.tar.gz
           tar zxvf libs.tar.gz
           rm -f libs.tar.gz
-
-      - name: Build the Linux aarch64 wheels
-        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && matrix.arch == 'aarch64'
         with:
           arch: ${{ matrix.arch }}
           os: ${{ matrix.os }}
+
+      - name: Build the Linux aarch64 wheels
+        if: matrix.os == 'ubuntu-20.04' && env.W_LINUXAARCH64 == 'true' && matrix.arch == 'aarch64'
         env:
           CIBW_ARCHS_LINUX: aarch64
         run: |
           cd linux/eec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
           cd linux/pec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
           cd linux/hec_pypi && python -m cibuildwheel --output-dir ../../linuxwheelhouse --platform linux && cd ../..
+        with:
+          arch: ${{ matrix.arch }}
+          os: ${{ matrix.os }}
 
       - name: Get the Windows binaries
         if: matrix.os == 'windows-2019' && env.W_WINDOWS == 'true'
