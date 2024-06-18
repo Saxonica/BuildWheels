@@ -98,7 +98,7 @@ jobs:
         env:
           CIBW_ARCHS_MACOS: arm64
         run: |
-          ls -laR
+          ls -laR /Volumes/Saxonica/src/saxonica/saxondev
           cd mac/eec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/pec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
