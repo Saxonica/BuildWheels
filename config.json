@@ -1,7 +1,7 @@
 {
   "user": "norm",
-  "macx86_64": true,
-  "macaarch64": false,
+  "macx86_64": false,
+  "macaarch64": true,
   "linuxx86_64": false,
   "linuxaarch64": false,
   "windows": false,
