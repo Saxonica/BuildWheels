@@ -90,8 +90,12 @@ jobs:
         if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
         run: |
           sudo rm -rf ${{ env.MACPATH }}/build/c
-          sudo mkdir -p ${{ env.MACPATH }}/build/c
-          sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/c
+          sudo mkdir -p ${{ env.MACPATH }}/build/eec/libsaxon
+          sudo mkdir -p ${{ env.MACPATH }}/build/pec/libsaxon
+          sudo mkdir -p ${{ env.MACPATH }}/build/hec/libsaxon
+          sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/eec/libsaxon/
+          sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/pec/libsaxon/
+          sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/hec/libsaxon/
 
       - name: Build the Mac arch64 wheels
         if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
