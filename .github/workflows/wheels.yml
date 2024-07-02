@@ -51,7 +51,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-11, ubuntu-20.04, windows-2019]
+        os: [macos-latest, ubuntu-20.04, windows-2019]
 
     steps:
       - uses: actions/checkout@v3
@@ -79,7 +79,7 @@ jobs:
         run: python -m pip install cibuildwheel==2.16.2
 
       - name: Get the Mac aarch64 binaries
-        if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
+        if: matrix.os == 'macos-latest' && env.W_MACAARCH64 == 'true'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/mac-aarch64.wheels.tar.gz libs.tar.gz
           sudo rm -rf mac
@@ -87,7 +87,7 @@ jobs:
           rm -f libs.tar.gz
 
       - name: Copy the Mac arch64 binaries to a fixed location
-        if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
+        if: matrix.os == 'macos-latest' && env.W_MACAARCH64 == 'true'
         run: |
           sudo mkdir -p ${{ env.MACPATH }}/build/eec/libsaxon
           sudo mkdir -p ${{ env.MACPATH }}/build/pec/libsaxon
@@ -97,7 +97,7 @@ jobs:
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/hec/libsaxon/
 
       - name: Build the Mac arch64 wheels
-        if: matrix.os == 'macos-11' && env.W_MACAARCH64 == 'true'
+        if: matrix.os == 'macos-latest' && env.W_MACAARCH64 == 'true'
         env:
           CIBW_ARCHS_MACOS: arm64
         run: |
@@ -107,7 +107,7 @@ jobs:
           cd mac/hec_pypi && python -m cibuildwheel --output-dir ../../macwheelhouse --platform macos && cd ../..
 
       - name: Get the Mac x86 binaries
-        if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
+        if: matrix.os == 'macos-latest' && env.W_MACX86_64 == 'true'
         run: |
           aws s3 cp s3://saxonica-wheel-staging/${{ env.W_USER }}/mac-x86_64.wheels.tar.gz libs.tar.gz
           sudo rm -rf mac
@@ -115,7 +115,7 @@ jobs:
           rm -f libs.tar.gz
 
       - name: Copy the Mac x86 binaries to a fixed location
-        if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
+        if: matrix.os == 'macos-latest' && env.W_MACX86_64 == 'true'
         run: |
           sudo mkdir -p ${{ env.MACPATH }}/build/eec/libsaxon
           sudo mkdir -p ${{ env.MACPATH }}/build/pec/libsaxon
@@ -125,7 +125,7 @@ jobs:
           sudo cp mac/*/libs/darwin/* ${{ env.MACPATH }}/build/hec/libsaxon/
 
       - name: Build the Mac x86 wheels
-        if: matrix.os == 'macos-11' && env.W_MACX86_64 == 'true'
+        if: matrix.os == 'macos-latest' && env.W_MACX86_64 == 'true'
         env:
           CIBW_ARCHS_MACOS: x86_64
         run: |
@@ -179,7 +179,7 @@ jobs:
           path: ./linuxwheelhouse/*.whl
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-11' && (env.W_MACAARCH64 == 'true' || env.W_MACX86_64 == 'true')
+        if: matrix.os == 'macos-latest' && (env.W_MACAARCH64 == 'true' || env.W_MACX86_64 == 'true')
         with:
           name: mac-wheels
           path: ./macwheelhouse/*.whl
